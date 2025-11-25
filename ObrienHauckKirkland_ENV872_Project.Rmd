@@ -23,6 +23,9 @@ check.packages(packages)
 
 '%ni%' <- Negate('%in%')
 
+
+#Add theme here:
+
 ```
 
 ## Background
@@ -39,6 +42,7 @@ Summarize where data came from, variables used, etc.
 
 ```{r intro.table.data, echo=FALSE}
 
+#Creates a table summarizing information about the dataset
 DatasetInfo <- data.frame(Item = c("Data Source", "Date Range", 
                                    "Number of Records ", "Records with Coordinates"),
                           Value = c("NOAA DIVER", "DATES", 
@@ -63,17 +67,97 @@ data_wrangle_1 <- data_raw %>%
   select(Case_Activity, Site_ID, Study_Name, Area_Description, Matrix_Group,
          Station, Date, Sample_ID, Sample_Upper_Depth, Sample_Lower_Depth,
          Sample_Depth_Unit, Depth_Category, Lab_Replicate, ChemCode, Max_Result_.Raw.,
-         Analysis_Result_Unit, Start_Latitude, Start_Longitude, 
-         End_Latitude, End_Longitude) %>% 
+         Analysis_Result_Unit, Start_Latitude, Start_Longitude) %>% 
   mutate(
-    Coordinate_Flag = case_when(
-      !is.na(Start_Latitude) ~ "Y",
-      is.na(Start_Latitude) & !is.na(End_Latitude) ~ "Y",
-      TRUE ~ "N"),
+    Coordinate_Flag = if_else(!is.na(Start_Longitude), "Y", "N"),
     Date = as.Date(Date))
-    
 
+#Here we create a new subset of the data that only includes records with coordinates
+#We also make this version of the dataset spatial for future mapping
+data_wrangle_2 <- data_wrangle_1 %>% 
+  filter(Coordinate_Flag == "Y") %>% 
+  filter(Start_Latitude < 44.74788) %>% #this is making sure that we only have data points below the site
+  st_as_sf(coords = c("Start_Longitude", "Start_Latitude"),
+           crs = 4269)
 
+glimpse(data_wrangle_2)
+summary(data_wrangle_2$Max_Result_.Raw.)
+#from the summary we see that some results are -9, this is NOAAs method of listing
+#denoting that no data is available, so we should exclude it
+
+unique(data_wrangle_2$Analysis_Result_Unit)
+#we also see that there are two units, PPM and mg/L. Upon further investigation,
+#there is only one record with mg/L, so we will exclude it because that is not a
+#valid unit for solids
+
+unique(data_wrangle_2$Sample_Depth_Unit)
 
 ```
+Based on above discoveries, we need to spatially limit the samples to the river extent, filter out records with -9 as a result, and filter out mg/L units.
+
+```{r data.cleaning}
+
+#filter out -9 in results and mg/L units
+#also converting sample depths to feet
+data_wrangle_3 <- data_wrangle_2 %>% 
+  filter(Max_Result_.Raw. > 0) %>% 
+  filter(Analysis_Result_Unit == "PPM") %>% 
+  mutate(Upper_Depth_ft = if_else(Sample_Upper_Depth >= 0, 
+                                  Sample_Upper_Depth*0.0328084,
+                                  Sample_Upper_Depth),
+         Lower_Depth_ft = if_else(Sample_Lower_Depth >= 0,
+                                  Sample_Lower_Depth*0.0328084,
+                                  Sample_Lower_Depth),
+         Avg_Depth_ft = if_else(Upper_Depth_ft >= 0 & Lower_Depth_ft >= 0,
+                               (Upper_Depth_ft+Lower_Depth_ft)/2, -9))
+
+
+#Create a point layer of the site coordinates (44.740733, -68.825704)
+Lat <- 44.740733
+Long <- -68.825704
+Name <- "HoltraChem Site"
+Site <- data.frame("Site" = Name, "Longitude" = Long, "Latitude" = Lat) %>% 
+  st_as_sf(coords = c("Longitude", "Latitude"), crs=4269)
+
+#Intersect the samples with the Penobscot River to ensure we are only looking
+#at samples in our area of interest.
+Penobscot <- st_read(here("./Shapefiles/Shedriver.shp")) 
+Penobscot <- Penobscot %>% 
+  st_make_valid() %>% 
+  st_transform(st_crs(data_wrangle_3)) %>% 
+  st_union()
+
+data_wrangle_4 <- data_wrangle_3 %>% 
+  st_filter(Penobscot) 
+
+#create a summary table
+
+```
+## Data Exploration
+
+Make some initial exploratory graphs
+
+```{r data.exploration, echo=FALSE}
+#Plot concentration
+ggplot(data_wrangle_3, aes(x=Date, y=Max_Result_.Raw.)) +
+  geom_point() +
+  labs(y="Concentration (PPM)")
+
+#Plot Depths and Concentration
+ggplot(data_wrangle_3, aes(x=Date, y=Avg_Depth_ft, fill=Max_Result_.Raw.)) +
+  geom_point(shape=21) +
+  scale_y_reverse() +
+  labs(y="Depth (ft)", fill="Concentration (PPM)")
+
+ggplot(data_wrangle_3, aes(x=Max_Result_.Raw.)) +
+  geom_histogram(bins = 30) +
+  xlim(0,10)
+
+#Map samples to Penobscot River
+mapview(Penobscot) + mapview(data_wrangle_3)
+
+```
+
+Sloane 11/24 - leaving off after doing initial data procesing, wrangling, and some visualization. There are a few spots to fill in (summary tables, figures, etc.), but the bulk of the processing/wrangling should be done!
+
 
