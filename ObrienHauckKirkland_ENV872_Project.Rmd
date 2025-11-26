@@ -1,4 +1,5 @@
 ---
+<<<<<<< HEAD
 title: "Spatial, Temporal, and Depth Distributions of Mercury Contamination in the Penobscot River, Maine"
 author: "Sloane Hauck, Julia Kirkland, Meg O'Brien, and Cira Ortiz"
 output: pdf_document
@@ -9,6 +10,7 @@ geometry: margin=2.54cm
 editor_options: 
   chunk_output_type: console
 ---
+\listoftables 
 ```{r project.setup, results='hide', echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
 packages <- c("tidyverse", "readxl", "dplyr", "lubridate", "sp", "sf","mapview",
               "knitr", "here", "ggplot2", "zoo", "trend")
@@ -30,11 +32,52 @@ check.packages(packages)
 
 ## Background
 
-Enter background text here
+>The Penobscot River in Maine has been the object of environmental concern
+and focus for years. It is the largest watershed in New England and hosts 
+the largest run of Atlantic salmon on the East Coast. Despite its ecological 
+importance and remarkable ecological resilience, the watershed experienced
+high levels of mercury contamination in the 1960s due to chemical dumping. 
+In 1967, a chemical plant owned by the pharmaceutical company Mallinckrodt 
+began discharging 13 tons of mercury into the river as part of its
+paper-production process. 
+
+>Mercury is a particularly worrisome and challenging contaminant because it 
+does not easily break down. The contamination has had a significant and 
+lasting impact on the surrounding ecosystem and nearby communities. The 
+state of Maine issued an advisory warning pregnant women against eating 
+certain species harvested from the river, and certain lobster and 
+crab fisheries have been shut down. 
+
+>However, due to the steadfast and tenacious efforts of environmental advocates, 
+this story has a silver lining. Senior attorney Nancy Marks from the NRDC 
+(the Natural Resources Defense Council) filed a lawsuit in 1998, and after two
+decades of litigation, a major legal breakthrough was achieved. In 2022, the 
+district attorney of Maine settled the long-running case, requiring Mallinckrodt 
+to pay $197 million in remediation for the mercury damage. 
+
+>Because this watershed has been the subject of extensive study to document 
+the need for remediation, there is considerable data about its sediment history.
+NOAA has compiled datasets on sediment, soil, and tissue chemistry from various 
+studies of the Penobscot watershed. Using this data, we will examine mercury
+levels in the sediment.
+
 
 ## Research Questions and Hypotheses
 
 Enter questions and hypotheses here
+>Research Questions: 
+
+>Question 1. How do mercury contamination levels change over time in the 
+sediments in the Penobscot River? (temporal) 
+>Question 2. Does mercury contamination increase with depth? (spatial) 
+
+>Hypothesis 1 : Post closure of the site, we would expect that mercury levels 
+in surface sediment will decrease over time and as they get further away from 
+the site due to natural attenuation. 
+
+>Hypothesis 2: Over time, mercury concentrations have decreased in the 
+Penobscot River due to sedimentation in the river.
+
 
 ## Dataset Information
 
