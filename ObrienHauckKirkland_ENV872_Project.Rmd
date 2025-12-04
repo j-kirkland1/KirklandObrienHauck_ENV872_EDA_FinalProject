@@ -54,7 +54,7 @@ the largest run of Atlantic salmon on the East Coast. Despite its ecological
 importance, the watershed has experienced significant degradation due to high 
 levels of mercury contamination by a chemical plant. In 1967, a pharmaceutical 
 company, Mallinckrodt began discharging mercury into the river as part of its
-paper-production process, leaving 13 tons of Mercury in the river by 1970. 
+production process, leaving 13 tons of Mercury in the river by 1970. 
 
 Mercury is a particularly worrisome and challenging contaminant because it 
 does not easily break down. The contamination has had a significant and 
@@ -87,7 +87,7 @@ Question 1. How do mercury contamination levels change over time in the
 sediments in the Penobscot River? 
 Question 2. Does mercury contamination increase with depth?
 
-Hypothesis 1 : Post closure of the site, we would expect that mercury levels 
+Hypothesis 1: Post closure of the site, we would expect that mercury levels 
 in surface sediment will decrease over time and as they get further away from 
 the site due to natural attenuation. 
 
@@ -200,7 +200,18 @@ ggplot(data_wrangle_2, aes(x=Date, y=Max_Result_.Raw.)) +
 
 ```
 
-Based on above discoveries, we need to spatially limit the samples to the river extent, filter out records with -9 as a result, and filter out mg/L units. Also, after a preliminary review, we found that very few, if any, samples were collected between 1970 and 2000. This gap limits our ability to conduct a robust long-term time-series analysis and constrains our capacity to assess the direct impact of the 1967 contamination event. However, the absence of data also reflects a broader theme in our findings- a historical lack of environmental oversight and policy that allowed the company’s actions to go unchecked. During this period, environmental concerns were not prioritized, resulting in limited industry vigilance and insufficient funding for scientific monitoring. To account for this gap, we restricted our analysis to data collected between 2000 and 2021.
+Based on above discoveries, we need to spatially limit the samples to the river 
+extent, filter out records with -9 as a result, and filter out mg/L units. 
+Also, after a preliminary review, we found that very few, if any, samples were 
+collected between 1970 and 2000. This gap limits our ability to conduct a
+robust long-term time-series analysis and constrains our capacity to assess 
+the direct impact of the 1967 contamination event. However, the absence of 
+data also reflects a broader theme in our findings- a historical lack of 
+environmental oversight and policy that allowed the company’s actions to 
+go unchecked. During this period, environmental concerns were not prioritized, 
+resulting in limited industry vigilance and insufficient funding for 
+scientific monitoring. To account for this gap, we restricted our analysis 
+to data collected between 2000 and 2021.
 
 
 ## Data Wrangling 
@@ -264,11 +275,11 @@ ggplot() +
 How do Mercury levels change, based on depth? 
 
 ```{r}
-DepthPlot.data <- data_wrangle_3%>%
+DepthPlot.data <- data_clean%>%
   na.omit()
 
 
-ggplot(SimpleDepthPlot.data,
+ggplot(DepthPlot.data,
        aes(x = Avg_Depth_ft, y = Max_Result_.Raw.)) +
   geom_point(alpha = 0.7, color = "darkblue") + 
   labs(
@@ -276,7 +287,7 @@ ggplot(SimpleDepthPlot.data,
     x = "Average Sample Depth (ft)",
     y = "Mercury Concentration (PPM)"
   ) +
- theme_minimal ()
+  Mytheme
 
 
 ```
@@ -288,7 +299,7 @@ ggplot(SimpleDepthPlot.data,
 
 #preliminary wrangle for analysis 
 
-MonthlyData <- data_wrangle_3 %>%
+MonthlyData <- data_clean %>%
   mutate(Year = year(Date), Month = month(Date)) %>%
   group_by(Year, Month) %>%
   summarize(Mean_Conc = mean(Max_Result_.Raw., na.rm = TRUE), .groups = "drop")
@@ -298,7 +309,7 @@ MonthlyData_final <- MonthlyData %>%
   select(Date, Mean_Conc)
 
 
-#Plot Mercury Conentrations over time
+#Plot Mercury Concentrations over time
 
 ggplot(MonthlyData_final,
         aes(x = Date, y = Mean_Conc)) +
@@ -308,8 +319,35 @@ ggplot(MonthlyData_final,
   title= "Mean Mean Monthly Mercury Concentrations over Time (PPM)",
   x = "Date", 
   y = "Mean Monthly Mercury Concentrations (PPM)")+ 
- theme_minimal ()
+Mytheme
 
+#Time Series Object
+
+f_month <- month(first(data_clean$Date)) 
+f_year  <- year(first(data_clean$Date))
+
+MercuryMonthly.ts <- ts(MonthlyData_final$Mean_Conc,
+                        start = c(min(f_year), 
+                                  min(f_month)),
+                        frequency = 12) 
+
+#decomposition
+
+MonthlyData_final_decomp <- stl(MercuryMonthly.ts,s.window = "periodic")
+plot(MonthlyData_final_decomp, main = "Monthly Mercury Decomposition")
+
+#MannKendallSeasonal
+
+MonthlyMercury_Seasonal_Trend <- Kendall::SeasonalMannKendall(MercuryMonthly.ts)
+summary(MonthlyOzone_Seasonal_Trend)
+
+# Mannkendallnotseasonanl
+Mercury_Seasonal_Component <- 
+MonthlyData_final_decomp$time.series[, "seasonal"]
+
+MonthlyMercury_noseason_ts <- 
+MercuryMonthly.ts - Mercury_Seasonal_Component
+plot(MonthlyMercury_noseason_ts)
 
 ```
 
