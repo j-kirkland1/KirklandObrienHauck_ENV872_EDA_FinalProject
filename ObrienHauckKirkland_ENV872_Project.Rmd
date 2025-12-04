@@ -227,14 +227,34 @@ data_wrangle_3 <- data_wrangle_2 %>%
 #Intersect the samples with the Penobscot River to ensure we are only looking
 #at samples in our area of interest.
 
-data_wrangle_4 <- data_wrangle_3 %>% 
-  st_filter(Penobscot_clean) 
+data_clean <- data_wrangle_3 %>% 
+  st_filter(Penobscot_clean) %>% 
+  arrange(Max_Result_.Raw.)
 
 #create a summary table
 
 ```
 #Spatial Map View
 ```{r}
+
+Penobscot_Map = mapview(Penobscot_clean,
+                        col.regions = "lightblue",
+                        alpha.regions = 1,
+                        map.types = "CartoDB.Positron",
+                        legend = FALSE)
+
+Penobscot_Map + mapview(data_clean, zcol = "Max_Result_.Raw.",
+                        alpha.regions = 0.5, col.regions = colorRampPalette(c("yellow", "orange", "red")))
+
+
+
+ggplot() +
+  geom_sf(data = Penobscot_clean, color = "darkblue", fill = "lightblue") +
+  geom_sf(data = data_clean, alpha = 0.5, shape = 21, aes(fill = Max_Result_.Raw.)) +
+  scale_fill_gradient(low = "yellow", high = "red",
+                      name = "Concentration (PPM)") +
+  ylim(44.49, 44.76)
+
 
  
 ```
