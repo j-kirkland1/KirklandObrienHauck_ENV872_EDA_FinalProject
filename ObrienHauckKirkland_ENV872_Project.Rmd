@@ -51,11 +51,10 @@ theme_set(Mytheme)
 The Penobscot River in Maine has been the object of environmental concern
 and focus for years. It is the largest watershed in New England and hosts 
 the largest run of Atlantic salmon on the East Coast. Despite its ecological 
-importance and remarkable ecological resilience, the watershed experienced
-high levels of mercury contamination in the 1960s due to chemical dumping. 
-In 1967, a chemical plant owned by the pharmaceutical company Mallinckrodt 
-began discharging 13 tons of mercury into the river as part of its
-paper-production process. 
+importance, the watershed has experienced significant degradation due to high 
+levels of mercury contamination by a chemical plant. In 1967, a pharmaceutical 
+company, Mallinckrodt began discharging mercury into the river as part of its
+paper-production process, leaving 13 tons of Mercury in the river by 1970. 
 
 Mercury is a particularly worrisome and challenging contaminant because it 
 does not easily break down. The contamination has had a significant and 
@@ -81,11 +80,12 @@ levels in the sediment.
 ## Research Questions and Hypotheses
 
 Enter questions and hypotheses here
+
 Research Questions: 
 
 Question 1. How do mercury contamination levels change over time in the 
-sediments in the Penobscot River? (temporal) 
-Question 2. Does mercury contamination increase with depth? (spatial) 
+sediments in the Penobscot River? 
+Question 2. Does mercury contamination increase with depth?
 
 Hypothesis 1 : Post closure of the site, we would expect that mercury levels 
 in surface sediment will decrease over time and as they get further away from 
