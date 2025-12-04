@@ -131,6 +131,14 @@ mapview(Penobscot_clean)
 
 ## Data Exploration
 
+We began by importing the raw NOAA Diver dataset and subsetting it to 
+include only the columns relevant to our analysis, including site location, 
+depth, depth type, chemical type (mercury), and concentration. Next, we flagged 
+all records containing coordinate information and created a new subset 
+consisting only of samples with valid coordinates. This subset was then 
+converted into a spatial dataset for future mapping and spatial analyses. 
+
+
 Look at what is included in the data and make some initial figures
 
 ```{r data.exploration, echo=FALSE}
@@ -176,6 +184,14 @@ unique(data_wrangle_2$Sample_Depth_Unit)
 
 Below data exploration/graphing is very preliminary, could use some additional attention to make the figures look nice.
 
+After cleaning the dataset, we plotted sample depths against mercury 
+concentrations, mapped the sampling locations onto the Penobscot River, 
+and examined concentration trends over time. This time-series plot 
+revealed a clear gap in sampling between 1970 and the mid-1990s. 
+We plotted a reference line representing the mercury PEC, above
+which harmful effects to sediment-dwelling biota are likely to occur.
+
+
 ```{r data.exploration.figures, echo=FALSE}
 
 #Plot Depths and Concentration
@@ -199,24 +215,25 @@ ggplot(data_wrangle_2, aes(x=Date, y=Max_Result_.Raw.)) +
 #this line represents the mercury PEC, above which harmful effects to sediment dwelling biota are likely to be observed.
 
 ```
-
-Based on above discoveries, we need to spatially limit the samples to the river 
-extent, filter out records with -9 as a result, and filter out mg/L units. 
-Also, after a preliminary review, we found that very few, if any, samples were 
-collected between 1970 and 2000. This gap limits our ability to conduct a
-robust long-term time-series analysis and constrains our capacity to assess 
-the direct impact of the 1967 contamination event. However, the absence of 
-data also reflects a broader theme in our findings- a historical lack of 
-environmental oversight and policy that allowed the company’s actions to 
-go unchecked. During this period, environmental concerns were not prioritized, 
-resulting in limited industry vigilance and insufficient funding for 
-scientific monitoring. To account for this gap, we restricted our analysis 
-to data collected between 2000 and 2021.
+A preliminary review revealed a major data gap between 1970 
+and 2000, leaving insufficient information to conduct a long-term time-series 
+analysis or evaluate the direct effects of the 1967 contamination event. 
+This gap reflects broader historical issues in environmental monitoring and 
+regulatory oversight during that period. To ensure analytical consistency, 
+we restricted our final dataset to samples collected from 2000–2021.
 
 
 ## Data Wrangling 
 
 Describe what steps are happening in the data wrangling section below
+
+A preliminary summary showed that some concentration results were coded as 
+–9, NOAA’s indicator for missing data, so these records were excluded. 
+We also identified two measurement units—PPM and mg/L—but because mg/L 
+is not appropriate for solids and appeared in only one record, that 
+entry was removed. Additionally, some samples had missing or inconsistent 
+depth information, so an average depth value will need to be generated for 
+further analysis.
 
 ```{r data.cleaning}
 #filter data before 2000 and remove -9 in results and mg/L units
@@ -247,6 +264,16 @@ data_clean <- data_wrangle_3 %>%
 ```
 
 #Spatial Analysis
+
+The preliminary analysis begins with orienting the viewers to the Penobscot 
+River in Maine, in relation to mercury concentrations. The map was 
+created using the shapefiles that were read in, and the subsequent spatial 
+dataset subset during the original data wrangling. 
+
+Below is a map of mercury concentration, in part per million (PPM) 
+as a color gradient in the spatially situated river, with yellow being 
+between 0-20 PPM and red being >25 PPM 
+
 
 ```{r}
 
@@ -286,27 +313,6 @@ Site_Map = mapview(data_near_site, zcol = "Max_Result_.Raw.",
 ```
 
 
-#Mercury concetrations as related to Depth
-How do Mercury levels change, based on depth? 
-
-```{r}
-
-DepthPlot.data <- data_clean %>%
-  na.omit()
-
-
-ggplot(DepthPlot.data,
-       aes(x = Avg_Depth_ft, y = Max_Result_.Raw.)) +
-  geom_point(alpha = 0.7, color = "darkblue") + 
-  labs(
-    title = "Mercury Concentration vs. Average Depth",
-    x = "Average Sample Depth (ft)",
-    y = "Mercury Concentration (PPM)"
-  ) +
-  Mytheme
-
-
-```
 
 # Mercury concentrations as related to time. (Time Series Analysis)
 
@@ -357,7 +363,7 @@ plot(MonthlyData_final_decomp, main = "Monthly Mercury Decomposition")
 MonthlyMercury_Seasonal_Trend <- Kendall::SeasonalMannKendall(MercuryMonthly.ts)
 summary(MonthlyOzone_Seasonal_Trend)
 
-# Mannkendallnotseasonanl
+# Mannkendallnotseasonl
 Mercury_Seasonal_Component <- 
 MonthlyData_final_decomp$time.series[, "seasonal"]
 
@@ -367,13 +373,56 @@ plot(MonthlyMercury_noseason_ts)
 
 ```
 
+#Mercury concetrations as related to Depth
+How do Mercury levels change, based on depth? 
+
+The following graph reflects the mercury concentrations from 1970 - 2021 by 
+depth type (surface sediment or subsurface sediment). As seen in the graph, 
+the 1970 has more surface sediment mercury concentrations which reflects 
+the proximity to the initial pollution. Whereas later decades have more 
+subsurface sediment mercury concentrations. 
+
+```{r}
+
+DepthPlot.data <- data_clean %>%
+  na.omit()
+
+#simple plot
+ggplot(DepthPlot.data,
+       aes(x = Avg_Depth_ft, y = Max_Result_.Raw.)) +
+  geom_point(alpha = 0.7, color = "darkblue") + 
+  labs(
+    title = "Mercury Concentration vs. Average Depth",
+    x = "Average Sample Depth (ft)",
+    y = "Mercury Concentration (PPM)"
+  ) +
+  Mytheme
+
+#Plot of concentrations vs time by depth type
+Depthdata<-data_clean %>% 
+  na.omit()
+
+ggplot(Depthdata,
+       aes(x=Date, 
+           y=Max_Result_.Raw., 
+           color = Depth_Category))+
+    geom_point(alpha = 0.7) + 
+  labs(
+    title = "Mercury Concentration vs. Average Depth",
+    x = "Date",
+    y = "Mercury Concentration (PPM)")
+
+
+
+```
+
 #Multiple linear regressions and AIC
 
 ```{r}
 
 ```
 
-# Statistical Analysis and Hypotehsis Testing 
+# Conclusion
 ```{r}
 
 ```
