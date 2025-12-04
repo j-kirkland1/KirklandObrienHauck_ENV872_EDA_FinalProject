@@ -177,11 +177,6 @@ unique(data_wrangle_2$Sample_Depth_Unit)
 Below data exploration/graphing is very preliminary, could use some additional attention to make the figures look nice.
 
 ```{r data.exploration.figures, echo=FALSE}
-#Plot concentration
-ggplot(data_wrangle_2, aes(x=Date, y=Max_Result_.Raw.)) +
-  geom_point() +
-  labs(y="Concentration (PPM)") +
-  geom_hline(yintercept = 1.06, color = "red") #this line represents the mercury PEC, above which harmful effects to sediment dwelling biota are likely to be observed.
 
 #Plot Depths and Concentration
 ggplot(data_wrangle_2, aes(x=Date, y=Sample_Upper_Depth, fill=Max_Result_.Raw.)) +
@@ -195,9 +190,18 @@ mapview(Penobscot) + mapview(data_wrangle_2,
                                                    col.regions = "grey", 
                                                    alpha.regions = 0.5)
 
+#Plot concentrations samples over time - gap between 1970 and mid 90s identified
+ggplot(data_wrangle_2, aes(x=Date, y=Max_Result_.Raw.)) +
+  geom_point() +
+  labs(y="Concentration (PPM)",
+       title = "Mercury Concentrations 1970-2021") +
+  geom_hline(yintercept = 1.06, color = "red")
+#this line represents the mercury PEC, above which harmful effects to sediment dwelling biota are likely to be observed.
+
 ```
 
-Based on above discoveries, we need to spatially limit the samples to the river extent, filter out records with -9 as a result, and filter out mg/L units.
+Based on above discoveries, we need to spatially limit the samples to the river extent, filter out records with -9 as a result, and filter out mg/L units. Also, after a preliminary review, we found that very few, if any, samples were collected between 1970 and 2000. This gap limits our ability to conduct a robust long-term time-series analysis and constrains our capacity to assess the direct impact of the 1967 contamination event. However, the absence of data also reflects a broader theme in our findings- a historical lack of environmental oversight and policy that allowed the company’s actions to go unchecked. During this period, environmental concerns were not prioritized, resulting in limited industry vigilance and insufficient funding for scientific monitoring. To account for this gap, we restricted our analysis to data collected between 2000 and 2021.
+
 
 ## Data Wrangling 
 
