@@ -223,7 +223,7 @@ data_wrangle_3 <- data_wrangle_2 %>%
 #at samples in our area of interest.
 
 data_wrangle_4 <- data_wrangle_3 %>% 
-  st_filter(Penobscot) 
+  st_filter(Penobscot_clean) 
 
 #create a summary table
 
