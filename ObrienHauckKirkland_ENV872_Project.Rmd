@@ -1,12 +1,15 @@
 ---
-title: "Spatial, Temporal, and Depth Distributions of Mercury Contamination in the Penobscot River, Maine"
+title: Spatial, Temporal, and Depth Distributions of Mercury Contamination in the
+  Penobscot River, Maine
 author: "Sloane Hauck, Julia Kirkland, Meg O'Brien, and Cira Ortiz"
-output: pdf_document
+output:
+  html_document:
+    df_print: paged
 toc: true
 lof: true
 lot: true
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: console
 ---
 \listoftables 
@@ -97,7 +100,13 @@ Penobscot River due to sedimentation in the river.
 
 ## Dataset Information
 
-Summarize where data came from, variables used, etc. 
+The dataset was generated from NOAA’s DIVER (Data Integration, Visualization, 
+Exploration and Reporting) system, which is part of the NOAA Damage Assessment,
+Remediation, and Restoration Program (DARRP). The data contains Mercury results
+from sediment samples collected in the Penobscot River region in Maine from 
+June 1st, 1970 to May 5th, 2021. Data is not available for every month of 
+the years provided, likely due to shifting priorities with monitoring or 
+project specific challenges.
 
 ```{r intro.table.data, echo=FALSE}
 
@@ -137,9 +146,6 @@ depth, depth type, chemical type (mercury), and concentration. Next, we flagged
 all records containing coordinate information and created a new subset 
 consisting only of samples with valid coordinates. This subset was then 
 converted into a spatial dataset for future mapping and spatial analyses. 
-
-
-Look at what is included in the data and make some initial figures
 
 ```{r data.exploration, echo=FALSE}
 
@@ -182,14 +188,11 @@ unique(data_wrangle_2$Sample_Depth_Unit)
 
 ```
 
-Below data exploration/graphing is very preliminary, could use some additional attention to make the figures look nice.
-
 After cleaning the dataset, we plotted sample depths against mercury 
 concentrations, mapped the sampling locations onto the Penobscot River, 
-and examined concentration trends over time. This time-series plot 
-revealed a clear gap in sampling between 1970 and the mid-1990s. 
-We plotted a reference line representing the mercury PEC, above
-which harmful effects to sediment-dwelling biota are likely to occur.
+and examined concentration trends over time. We plotted a reference line 
+representing the mercury PEC, above which harmful effects to sediment-dwelling 
+biota are likely to occur.
 
 
 ```{r data.exploration.figures, echo=FALSE}
@@ -215,6 +218,7 @@ ggplot(data_wrangle_2, aes(x=Date, y=Max_Result_.Raw.)) +
 #this line represents the mercury PEC, above which harmful effects to sediment dwelling biota are likely to be observed.
 
 ```
+
 A preliminary review revealed a major data gap between 1970 
 and 2000, leaving insufficient information to conduct a long-term time-series 
 analysis or evaluate the direct effects of the 1967 contamination event. 
@@ -225,9 +229,7 @@ we restricted our final dataset to samples collected from 2000–2021.
 
 ## Data Wrangling 
 
-Describe what steps are happening in the data wrangling section below
-
-A preliminary summary showed that some concentration results were coded as 
+Our initial exploration showed that some concentration results were coded as 
 –9, NOAA’s indicator for missing data, so these records were excluded. 
 We also identified two measurement units—PPM and mg/L—but because mg/L 
 is not appropriate for solids and appeared in only one record, that 
@@ -265,17 +267,22 @@ data_clean <- data_wrangle_3 %>%
 
 #Spatial Analysis
 
-The preliminary analysis begins with orienting the viewers to the Penobscot 
+The analysis begins with orienting the viewers to the Penobscot 
 River in Maine, in relation to mercury concentrations. The map was 
 created using the shapefiles that were read in, and the subsequent spatial 
-dataset subset during the original data wrangling. 
+dataset subset during the original data wrangling. In the figures you can see 
+that the highest concentrations are centered around the historical site itself.
 
-Below is a map of mercury concentration, in part per million (PPM) 
-as a color gradient in the spatially situated river, with yellow being 
-between 0-20 PPM and red being >25 PPM 
+Map 1 is a map of mercury concentration, in part per million (PPM) 
+as a color gradient in the spatially situated river. As seen the highest
+values are around 108.63 PPM, which is 100 times that of the PEC.
+
+Map 2 is a zoomed in map of samples around the contamination site.
+
+Map 3 is the spatial distribution of sample points.
 
 
-```{r}
+```{r spatial.data}
 
 Penobscot_Map = mapview(Penobscot_clean,
                         col.regions = "lightblue",
@@ -312,12 +319,34 @@ Site_Map = mapview(data_near_site, zcol = "Max_Result_.Raw.",
  
 ```
 
+We then ran a multiple linear regression to determine if either 
+variable- time or depth, had an impact on mercury concentration in the river.
+
+#Multiple linear regressions
+
+```{r MLR.plopr}
 
 
-# Mercury concentrations as related to time. (Time Series Analysis)
+#Multiple linear regression to see depth  and time
+
+mercury_depthtime_regression <- lm(data=data_clean, 
+                               Max_Result_.Raw.~Avg_Depth_ft+ Date)
+summary (mercury_depthtime_regression)
 
 
-```{r}
+```
+
+This shows that at least one predictor is associated with concentration, 
+but it is small. This sets the stage for the rest of our analysis.
+
+# Temporal Relationship
+
+This analysis starts with specific wrangling into a month colomn
+to prepare the data for a time series analysis. Due to logistical and budget
+constraints, it seems that data was not regularly collected, 
+meaning there are some gaps in the samples collected each month.
+
+```{r temporal}
 
 #preliminary wrangle for analysis 
 
@@ -330,18 +359,22 @@ MonthlyData_final <- MonthlyData %>%
   mutate(Date = ymd(paste0(Year, "-", Month, "-01"))) %>%
   select(Date, Mean_Conc)
 
-
-#Plot Mercury Concentrations over time
+#time plot
 
 ggplot(MonthlyData_final,
         aes(x = Date, y = Mean_Conc)) +
   geom_line() +
   geom_smooth(method = "lm")+
   labs(
-  title= "Mean Mean Monthly Mercury Concentrations over Time (PPM)",
+  title= "Mean Monthly Mercury Concentrations over Time (PPM)",
   x = "Date", 
   y = "Mean Monthly Mercury Concentrations (PPM)")+ 
 Mytheme
+
+#Linear model
+mercury_time_regression <- lm(data=MonthlyData_final, 
+                               Mean_Conc~Date)
+summary (mercury_time_regression)
 
 #Time Series Object
 
@@ -361,19 +394,32 @@ plot(MonthlyData_final_decomp, main = "Monthly Mercury Decomposition")
 #MannKendallSeasonal
 
 MonthlyMercury_Seasonal_Trend <- Kendall::SeasonalMannKendall(MercuryMonthly.ts)
-summary(MonthlyOzone_Seasonal_Trend)
+summary(MonthlyMercury_Seasonal_Trend)
 
-# Mannkendallnotseasonl
+# MannKendallnotseasonal
 Mercury_Seasonal_Component <- 
 MonthlyData_final_decomp$time.series[, "seasonal"]
 
-MonthlyMercury_noseason_ts <- 
-MercuryMonthly.ts - Mercury_Seasonal_Component
-plot(MonthlyMercury_noseason_ts)
+MonthlyMercury_noseason_ts <- MercuryMonthly.ts - Mercury_Seasonal_Component
+
+Mercury_noseason_trend <- trend::mk.test(MonthlyMercury_noseason_ts)
+summary(Mercury_noseason_trend)
 
 ```
 
-#Mercury concetrations as related to Depth
+We first plotted a graph of merucry concentrations as a function of time. We 
+see an unexpected peak in 2021. Next, we ran a simple linear regression, 
+and found a non statistically significant p-value.
+Because we did not find a linear trend, so we ran the  seasonal Mann Kendall
+test to determine whether there is a monotonic trend that fluctuates with 
+seasonal patterns, we obtained a p-value of 0.596. This is not a 
+significant p-value, indicating that there is no statistically significant
+trend in the seasonal data. We then ran a non-seasonal trend test, which also 
+produced a non-significant p-value. Together, these results show that there 
+is no temporal trend in contamination levels in the Penobscot River. Therefore,
+we must reject our first hypothesis in its entirety.
+
+#Depth
 How do Mercury levels change, based on depth? 
 
 The following graph reflects the mercury concentrations from 1970 - 2021 by 
@@ -382,10 +428,26 @@ the 1970 has more surface sediment mercury concentrations which reflects
 the proximity to the initial pollution. Whereas later decades have more 
 subsurface sediment mercury concentrations. 
 
-```{r}
+```{r depth}
 
 DepthPlot.data <- data_clean %>%
+  na.omit() %>%
+  filter(Avg_Depth_ft>=0)
+
+#Plot of concentrations vs time by depth type.
+Depthdata<-data_clean %>% 
   na.omit()
+
+ggplot(Depthdata,
+       aes(x=Date, 
+           y=Max_Result_.Raw., 
+           color = Depth_Category))+
+    geom_point(alpha = 0.7) + 
+  labs(
+    title = "Mercury Concentration vs. Average Depth",
+    x = "Date",
+    y = "Mercury Concentration (PPM)") +
+  Mytheme
 
 #simple plot
 ggplot(DepthPlot.data,
@@ -398,35 +460,58 @@ ggplot(DepthPlot.data,
   ) +
   Mytheme
 
-#Plot of concentrations vs time by depth type
-Depthdata<-data_clean %>% 
-  na.omit()
+#top two feet because that is the most biologically active zone 
+DepthPlot.data_bioactive <- DepthPlot.data %>% 
+  filter(Avg_Depth_ft <= 2)
 
-ggplot(Depthdata,
-       aes(x=Date, 
-           y=Max_Result_.Raw., 
-           color = Depth_Category))+
-    geom_point(alpha = 0.7) + 
+ggplot(DepthPlot.data_bioactive,
+       aes(x = Avg_Depth_ft, y = Max_Result_.Raw.)) +
+  geom_point(alpha = 0.7, color = "darkblue") + 
   labs(
     title = "Mercury Concentration vs. Average Depth",
-    x = "Date",
-    y = "Mercury Concentration (PPM)")
+    x = "Average Sample Depth (ft)",
+    y = "Mercury Concentration (PPM)"
+  ) +
+  Mytheme
 
 
+#Linear regression to see depth
+
+mercury_depth_regression <- lm(data=DepthPlot.data, 
+                               Max_Result_.Raw.~Avg_Depth_ft)
+summary (mercury_depth_regression)
 
 ```
 
-#Multiple linear regressions and AIC
+In our initial analysis of the first plot, we observed that subsurface sediment
+generally showed higher mercury concentrations over time. In the next figure,
+we found that mercury concentrations were primarily aggregated within the top 
+0–2 feet of depth. Because this upper zone is the most biologically active, 
+we created another plot isolating only the top two feet. Even after this
+refinement, no significant temporal trend was detected.
 
-```{r}
+To further assess the potential relationship between mercury concentration 
+and depth, we conducted a linear regression analysis. Although the data did 
+not visually suggest a trend, the regression results indicated evidence of a
+linear relationship, as the p-value was statistically significant (p < 0.05). 
+However, the adjusted R-squared value of 0.001936 showed that the relationship 
+is extremely weak.
 
-```
+Therefore, although a statistically detectable linear 
+relationship exists, depth cannot be considered a meaningful 
+predictor of mercury concentration because the effect size is negligible. 
+We must conclude that our results are inconclusive, meaning we cannot 
+confidently determine whether our hypothesis is true or false.
+
 
 # Conclusion
-```{r}
+```{r conclusion}
+
+#Spearman Rho because there is no seasonality, it is non-parametric and missing
+#data is allowed.
 
 ```
+Next steps would be to run this with more comprehensive data. 
 
-Sloane 11/24 - leaving off after doing initial data procesing, wrangling, and some visualization. There are a few spots to fill in (summary tables, figures, etc.), but the bulk of the processing/wrangling should be done!
 
 
