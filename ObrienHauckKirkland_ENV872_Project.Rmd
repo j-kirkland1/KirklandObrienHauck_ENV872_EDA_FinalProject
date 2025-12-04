@@ -245,7 +245,9 @@ data_clean <- data_wrangle_3 %>%
 #create a summary table
 
 ```
-#Spatial Map View
+
+#Spatial Analysis
+
 ```{r}
 
 Penobscot_Map = mapview(Penobscot_clean,
@@ -254,6 +256,7 @@ Penobscot_Map = mapview(Penobscot_clean,
                         map.types = "CartoDB.Positron",
                         legend = FALSE)
 
+# Map of concentrations across the entire river
 Concentration_Map = Penobscot_Map + mapview(data_clean, zcol = "Max_Result_.Raw.",
                                             alpha.regions = 0.5, 
                                             col.regions = colorRampPalette(c("yellow", 
@@ -262,7 +265,7 @@ Concentration_Map = Penobscot_Map + mapview(data_clean, zcol = "Max_Result_.Raw.
                                             layer.name = "Mercury Concentration (PPM)")
 
 
-
+# Map of concentrations near the site
 bbox <- st_as_sfc(st_bbox(c(xmin = -68.844, ymin = 44.734, xmax = -68.819,
                             ymax = 44.748), crs = 4269))
 
@@ -287,7 +290,8 @@ Site_Map = mapview(data_near_site, zcol = "Max_Result_.Raw.",
 How do Mercury levels change, based on depth? 
 
 ```{r}
-DepthPlot.data <- data_clean%>%
+
+DepthPlot.data <- data_clean %>%
   na.omit()
 
 
