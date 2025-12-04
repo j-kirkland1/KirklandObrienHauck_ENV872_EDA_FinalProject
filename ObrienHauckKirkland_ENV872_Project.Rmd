@@ -208,10 +208,11 @@ Based on above discoveries, we need to spatially limit the samples to the river 
 Describe what steps are happening in the data wrangling section below
 
 ```{r data.cleaning}
-
-#filter out -9 in results and mg/L units
+#filter data before 2000 and remove -9 in results and mg/L units
 #also converting sample depths to feet
-data_wrangle_3 <- data_wrangle_2 %>% 
+data_wrangle_3 <- data_wrangle_2 %>%
+  mutate(Year=year(Date)) %>%
+  filter(Year>(2000)) %>% 
   filter(Max_Result_.Raw. >= 0) %>% 
   filter(Analysis_Result_Unit == "PPM") %>% 
   mutate(Upper_Depth_ft = if_else(Sample_Upper_Depth >= 0, 
