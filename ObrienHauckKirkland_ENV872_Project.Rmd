@@ -116,7 +116,7 @@ knitr::kable(DatasetInfo, align = c('l', 'l'))
 #Create a point layer of the site coordinates (44.740733, -68.825704)
 Lat <- 44.740733
 Long <- -68.825704
-Name <- "HoltraChem Site"
+Name <- "Mallinckrodt Site"
 Site <- data.frame("Site" = Name, "Longitude" = Long, "Latitude" = Lat) %>% 
   st_as_sf(coords=c("Longitude", "Latitude"), crs=4269)
 
@@ -254,17 +254,29 @@ Penobscot_Map = mapview(Penobscot_clean,
                         map.types = "CartoDB.Positron",
                         legend = FALSE)
 
-Penobscot_Map + mapview(data_clean, zcol = "Max_Result_.Raw.",
-                        alpha.regions = 0.5, col.regions = colorRampPalette(c("yellow", "orange", "red")))
+Concentration_Map = Penobscot_Map + mapview(data_clean, zcol = "Max_Result_.Raw.",
+                                            alpha.regions = 0.5, 
+                                            col.regions = colorRampPalette(c("yellow", 
+                                                                            "orange", 
+                                                                            "red")),
+                                            layer.name = "Mercury Concentration (PPM)")
 
 
 
-ggplot() +
-  geom_sf(data = Penobscot_clean, color = "darkblue", fill = "lightblue") +
-  geom_sf(data = data_clean, alpha = 0.5, shape = 21, aes(fill = Max_Result_.Raw.)) +
-  scale_fill_gradient(low = "yellow", high = "red",
-                      name = "Concentration (PPM)") +
-  ylim(44.49, 44.76)
+bbox <- st_as_sfc(st_bbox(c(xmin = -68.844, ymin = 44.734, xmax = -68.819,
+                            ymax = 44.748), crs = 4269))
+
+data_near_site <- data_clean %>% 
+  st_filter(bbox)
+
+Site_Map = mapview(data_near_site, zcol = "Max_Result_.Raw.",
+                                            alpha.regions = 0.5, 
+                                            col.regions = colorRampPalette(c("yellow", 
+                                                                            "orange", 
+                                                                            "red")),
+                                            layer.name = "Mercury Concentration (PPM)",
+                   map.types = "CartoDB.Positron") +
+  mapview(Site, col.regions = "black", alpha.regions = 1)
 
 
  
