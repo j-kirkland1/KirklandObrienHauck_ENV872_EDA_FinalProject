@@ -122,11 +122,8 @@ Site <- data.frame("Site" = Name, "Longitude" = Long, "Latitude" = Lat) %>%
 
 #Penobscot River shapefile
 #CSH comment: something insane is happening here
-Penobscot <- st_read(here("./Shapefiles/Shedriver.shp")) 
+Penobscot <- st_read(here("./Shapefiles/Penobscot_River.shp")) 
 Penobscot_clean <- Penobscot %>% 
-  filter(!st_is_empty(geometry)) %>% 
-  st_combine() %>% 
-  st_make_valid() %>% 
   st_transform(crs=4269)
 
 mapview(Penobscot_clean)
