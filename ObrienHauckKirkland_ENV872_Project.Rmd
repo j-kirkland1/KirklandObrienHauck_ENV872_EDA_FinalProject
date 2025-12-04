@@ -104,7 +104,7 @@ Summarize where data came from, variables used, etc.
 #Creates a table summarizing information about the dataset
 DatasetInfo <- data.frame(Item = c("Data Source", "Date Range", 
                                    "Number of Records ", "Records with Coordinates"),
-                          Value = c("NOAA DIVER", "DATES", 
+                          Value = c("NOAA DIVER", "June 1st, 1970 to May 5th, 2021", 
                                     "28,058", "24,501"))
 
 knitr::kable(DatasetInfo, align = c('l', 'l'))
@@ -121,16 +121,11 @@ Site <- data.frame("Site" = Name, "Longitude" = Long, "Latitude" = Lat) %>%
   st_as_sf(coords=c("Longitude", "Latitude"), crs=4269)
 
 #Penobscot River shapefile
-#CSH comment: something insane is happening here
 Penobscot <- st_read(here("./Shapefiles/Penobscot_River.shp")) 
 Penobscot_clean <- Penobscot %>% 
   st_transform(crs=4269)
 
 mapview(Penobscot_clean)
-
-ggplot() +
-  geom_sf(data = Penobscot_clean) +
-  geom_sf(data = data_wrangle_2)
 
 ```
 
@@ -213,7 +208,7 @@ Describe what steps are happening in the data wrangling section below
 #filter out -9 in results and mg/L units
 #also converting sample depths to feet
 data_wrangle_3 <- data_wrangle_2 %>% 
-  filter(Max_Result_.Raw. > 0) %>% 
+  filter(Max_Result_.Raw. >= 0) %>% 
   filter(Analysis_Result_Unit == "PPM") %>% 
   mutate(Upper_Depth_ft = if_else(Sample_Upper_Depth >= 0, 
                                   Sample_Upper_Depth*0.0328084,
