@@ -1,5 +1,4 @@
 ---
-<<<<<<< HEAD
 title: "Spatial, Temporal, and Depth Distributions of Mercury Contamination in the Penobscot River, Maine"
 author: "Sloane Hauck, Julia Kirkland, Meg O'Brien, and Cira Ortiz"
 output: pdf_document
@@ -27,6 +26,23 @@ check.packages(packages)
 
 
 #Add theme here:
+
+Mytheme <- theme_classic (base_size = 14) +
+theme(
+plot.title = element_text(size = 16, face = 'bold', hjust = 0.5),
+axis.text = element_text(color = 'black'),
+axis.title.x = element_text(hjust = 0.5, vjust = 2, size = 14),
+axis.title.y = element_text(hjust = 0.5, vjust = 2, angle = 90, size = 14), 
+legend.position = 'top', 
+legend.title = element_text(face = 'italic'),
+plot.background = element_rect(fill = "white"),   
+panel.background = element_rect(fill = "lavenderblush"),
+panel.grid.major = element_line(color = 'gray90'), 
+panel.grid.minor = element_line(color = 'gray95'),
+panel.border = element_rect(color = "gray70", fill = NA),
+axis.ticks = element_line(color = "black", size = 0.5))
+
+theme_set(Mytheme)
 
 ```
 
