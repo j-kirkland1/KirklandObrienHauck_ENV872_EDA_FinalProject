@@ -265,7 +265,7 @@ data_clean <- data_wrangle_3 %>%
 
 ```
 
-#Spatial Analysis
+## Spatial Analysis
 
 The analysis begins with orienting the viewers to the Penobscot 
 River in Maine, in relation to mercury concentrations. The map was 
@@ -322,7 +322,7 @@ Site_Map = mapview(data_near_site, zcol = "Max_Result_.Raw.",
 We then ran a multiple linear regression to determine if either 
 variable- time or depth, had an impact on mercury concentration in the river.
 
-#Multiple linear regressions
+## Multiple linear regressions
 
 ```{r MLR.plopr}
 
@@ -339,7 +339,7 @@ summary (mercury_depthtime_regression)
 This shows that at least one predictor is associated with concentration, 
 but it is small. This sets the stage for the rest of our analysis.
 
-# Temporal Relationship
+## Temporal Relationship
 
 This analysis starts with specific wrangling into a month colomn
 to prepare the data for a time series analysis. Due to logistical and budget
@@ -419,7 +419,7 @@ produced a non-significant p-value. Together, these results show that there
 is no temporal trend in contamination levels in the Penobscot River. Therefore,
 we must reject our first hypothesis in its entirety.
 
-#Depth
+## Depth
 How do Mercury levels change, based on depth? 
 
 The following graph reflects the mercury concentrations from 1970 - 2021 by 
@@ -504,7 +504,7 @@ We must conclude that our results are inconclusive, meaning we cannot
 confidently determine whether our hypothesis is true or false.
 
 
-# Conclusion
+## Conclusion
 ```{r conclusion}
 
 #Spearman Rho because there is no seasonality, it is non-parametric and missing
