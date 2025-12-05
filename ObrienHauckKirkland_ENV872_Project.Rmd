@@ -5,6 +5,7 @@ author: "Sloane Hauck, Julia Kirkland, Meg O'Brien, and Cira Ortiz"
 output:
   html_document:
     df_print: paged
+  pdf_document: default
 toc: true
 lof: true
 lot: true
@@ -13,7 +14,7 @@ editor_options:
   chunk_output_type: console
 ---
 \listoftables 
-```{r project.setup, results='hide', echo=FALSE, message=FALSE, warning=FALSE, error=FALSE}
+```{r project.setup, error=FALSE, message=FALSE, warning=FALSE, include=FALSE, results='hide'}
 packages <- c("tidyverse", "readxl", "dplyr", "lubridate", "sp", "sf","mapview",
               "knitr", "here", "ggplot2", "zoo", "trend")
 
@@ -121,7 +122,7 @@ knitr::kable(DatasetInfo, align = c('l', 'l'))
 ```
 
 ```{r setup.spatial.databases, echo=FALSE}
-
+knitr::opts_chunk$set(eval = FALSE, include = FALSE)
 #Create a point layer of the site coordinates (44.740733, -68.825704)
 Lat <- 44.740733
 Long <- -68.825704
@@ -147,7 +148,7 @@ all records containing coordinate information and created a new subset
 consisting only of samples with valid coordinates. This subset was then 
 converted into a spatial dataset for future mapping and spatial analyses. 
 
-```{r data.exploration, echo=FALSE}
+```{r data.exploration, include=FALSE}
 
 #Reading in the dataset
 data_raw <- read.csv(here("./Raw Data/DIVER_Penobscot_Mercury_2025_11_18_Samples.csv"))
@@ -195,7 +196,7 @@ representing the mercury PEC, above which harmful effects to sediment-dwelling
 biota are likely to occur.
 
 
-```{r data.exploration.figures, echo=FALSE}
+```{r data.exploration.figures, warning=FALSE}
 
 #Plot Depths and Concentration
 ggplot(data_wrangle_2, aes(x=Date, y=Sample_Upper_Depth, fill=Max_Result_.Raw.)) +
@@ -237,7 +238,7 @@ entry was removed. Additionally, some samples had missing or inconsistent
 depth information, so an average depth value will need to be generated for 
 further analysis.
 
-```{r data.cleaning}
+```{r data.cleaning, warning=FALSE}
 #filter data before 2000 and remove -9 in results and mg/L units
 #also converting sample depths to feet
 data_wrangle_3 <- data_wrangle_2 %>%
@@ -508,10 +509,38 @@ confidently determine whether our hypothesis is true or false.
 ```{r conclusion}
 
 #Spearman Rho because there is no seasonality, it is non-parametric and missing
-#data is allowed.
+#data is allowed.?
 
 ```
-Next steps would be to run this with more comprehensive data. 
+In conclusion, after conducting our temporal analysis, we found that we 
+had to reject our first hypothesis that, post-closure of the site, mercury 
+levels in surface sediment would decrease over time and with increasing 
+distance from the source due to natural attenuation. We acknowledge that 
+this outcome may be influenced by the large data gap in the NOAA dataset, 
+which makes it difficult to analyze the years immediately following 
+contamination. Despite this limitation, our spatial analysis showed that the 
+highest mercury concentrations still remain closest to the original 
+contamination site.
+
+In our depth analysis, we also had to reject our second hypothesis. 
+Although the regression produced a statistically significant p-value, 
+the relationship was weak, limiting our confidence in the results. Incorporating 
+additional data or more detailed sampling could potentially change these 
+findings.
+
+Next steps in this study would include continuing to collect and clean data, 
+and possibly interpolating or otherwise manipulating the existing data points 
+to create a more comprehensive temporal dataset. This would allow for a 
+clearer understanding of long-term trends and improve the reliability of 
+future analyses.
+
+List of R squared values and p-values from linear regression.
+
+| Variable  | R squared value |	P-value    | 
+|----------:|:----------------|:-----------|
+| Time      |      0.01026    | 0.2237     |
+| Depth     |    0.001936     | 0.0001124  |
+
 
 
 
