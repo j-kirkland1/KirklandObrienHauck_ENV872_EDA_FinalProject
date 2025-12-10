@@ -12,6 +12,12 @@ geometry: margin=2.54cm
 editor_options:
   chunk_output_type: console
 ---
+<style>
+body {
+  background-color: #E0F7FF;
+}
+</style>
+
 \listoftables 
 ```{r project.setup, error=FALSE, message=FALSE, warning=FALSE, include=FALSE, results='hide'}
 packages <- c("tidyverse", "readxl", "dplyr", "lubridate", "sp", "sf","mapview",
@@ -54,31 +60,36 @@ theme_set(Mytheme)
 
 The Penobscot River in Maine has been the object of environmental concern
 and focus for years. It is the largest watershed in New England and hosts 
-the largest run of Atlantic salmon on the East Coast. Despite its ecological 
+the largest run of Atlantic salmon on the East Coast (Natural Resources 
+Council of Maine, 2013; The Nature Conservancy, n.d.).. Despite its ecological 
 importance, the watershed has experienced significant degradation due to high 
 levels of mercury contamination by a chemical plant. In 1967, a pharmaceutical 
 company, Mallinckrodt began discharging mercury into the river as part of its
-production process, leaving 13 tons of Mercury in the river by 1970. 
+production process, leaving 13 tons of Mercury in the river by 1970 (Island 
+Institute, n.d.).
 
 Mercury is a particularly worrisome and challenging contaminant because it 
 does not easily break down. The contamination has had a significant and 
 lasting impact on the surrounding ecosystem and nearby communities. The 
 state of Maine issued an advisory warning pregnant women against eating 
 certain species harvested from the river, and certain lobster and 
-crab fisheries have been shut down. 
+crab fisheries have been shut down (Maine Department of Environmental 
+Protection, n.d.).
 
 However, due to the steadfast and tenacious efforts of environmental advocates, 
 this story has a silver lining. Senior attorney Nancy Marks from the NRDC 
 (the Natural Resources Defense Council) filed a lawsuit in 1998, and after two
 decades of litigation, a major legal breakthrough was achieved. In 2022, the 
 district attorney of Maine settled the long-running case, requiring Mallinckrodt 
-to pay $197 million in remediation for the mercury damage. 
+to pay $197 million in remediation for the mercury damage (A 22-Year Court 
+Battle Ends with Justice for the Penobscot River, 2022; Penobscot River 
+Remediation, n.d.).
 
 Because this watershed has been the subject of extensive study to document 
 the need for remediation, there is considerable data about its sediment history.
 NOAA has compiled datasets on sediment, soil, and tissue chemistry from various 
-studies of the Penobscot watershed. Using this data, we will examine mercury
-levels in the sediment.
+studies of the Penobscot watershed (Island Institute, n.d.). Using this data, 
+we will examine mercurylevels in the sediment.
 
 
 ## Research Questions and Hypotheses
@@ -189,7 +200,7 @@ unique(data_wrangle_2$Sample_Depth_Unit)
 After cleaning the dataset, we plotted sample depths against mercury 
 concentrations, mapped the sampling locations onto the Penobscot River, 
 and examined concentration trends over time. We plotted a reference line 
-representing the mercury PEC (MacDonald et al. 2000), above which harmful effects to sediment-dwelling 
+representing the mercury PEC (MacDonald et al., 2000), above which harmful effects to sediment-dwelling 
 biota are likely to occur.
 
 
@@ -352,8 +363,7 @@ summary(mercury_depthtime_regression)
 
 ```
 
-The results show that at least one predictor is associated with concentration, 
-but it is small. The P-value is less than 0.05, so either time, depth, or both have some linear relationship with concentration. However, an R-squared value of <0.01 is very small, meaning the relationship is very weak, and the relationship is likely not significant. To further explore this relationship, we conducted linear regressions on each variable, time and depth, separately to see which one is positively correlated with concentration.
+The results indicate that at least one predictor is related to concentration, but the effect is very small. The p-value of 0.02788 is below 0.05, which means that time, depth, or both have some linear association with concentration. However, the R-squared value is less than 0.01, indicating that the model explains almost none of the variation in concentration, so the relationship is extremely weak. To better understand which variable is driving this, we ran separate linear regressions for time and depth to determine which one, if either, is positively correlated with concentration.
 
 ## Temporal Relationship
 
@@ -402,11 +412,9 @@ summary(mercury_time_regression)
 
 ```
 
-The P-value is greater than 0.05, therefore we can conclude that the relationship between time and the mean monthly concentration is not linear or statistically significant. 
+The resulting p-value is 0.2237, which is greater than 0.05. Therefore, we conclude that the relationship between time and mean monthly concentration is not linear or statistically significant.
 
-Because we did not find a linear trend, so we ran the seasonal Mann Kendall
-test to determine whether there is a monotonic trend that fluctuates with 
-seasonal patterns, we obtained a p-value of 0.596.
+Because no linear trend was detected, we ran the seasonal Mann Kendall test to determine whether there is a monotonic trend exists that fluctuates with seasonal patterns. 
 
 ```{r temporal.timeseries, echo=FALSE}
 
@@ -437,7 +445,7 @@ summary(MonthlyMercury_Seasonal_Trend)
 
 ```
 
-This is not a significant p-value, indicating that there is no statistically significant trend in the seasonal data. We then ran a non-seasonal trend test, which also produced a non-significant p-value.
+This test produced a p-value of 0.596. This is not a significant p-value because it is >0.05, indicating that there is no statistically significant trend in the seasonal data. We then ran a non-seasonal trend test, which also produced a non-significant p-value of 0.7208.
 
 ```{r temporal.timeseries.nonseasonal, echo=FALSE}
 
@@ -543,7 +551,7 @@ refinement, no significant temporal trend was detected.
 To further assess the potential relationship between mercury concentration 
 and depth, we conducted a linear regression analysis. Although the data did 
 not visually suggest a trend, the regression results indicated evidence of a
-linear relationship, as the p-value was statistically significant (p < 0.05). 
+linear relationship, as the p-value of 0.0001124 was statistically significant being that it was < 0.05. 
 However, the adjusted R-squared value of 0.001936 showed that the relationship 
 is extremely weak.
 
@@ -586,6 +594,18 @@ List of R squared values and p-values from linear regression.
 | Depth     |    0.001936     | 0.0001124  |
 
 # References
-MacDonald, D. D., Ingersoll, C. G., & Berger, T. A. 2000. Development and Evaluation of Consensus-Based Sediment Quality Guidelines for Freshwater Ecosystems. Environmental Contamination and Toxicology. 39:20-31. https://doi.org/10.1007/s002440010075. 
 
+  A 22-Year Court Battle Ends with Justice for the Penobscot River. (2022, October 11). https://www.nrdc.org/stories/22-year-court-battle-ends-justice-penobscot-river
+  
+  Finally, a plan to remediate Penobscot River mercury—Island Institute. (n.d.). Retrieved December 10, 2025, from https://www.islandinstitute.org/working-waterfront/finally-a-plan-to-remediate-penobscot-river-mercury/
+  
+  MacDonald, D. D., Ingersoll, C. G., & Berger, T. A. (2000). Development and Evaluation of Consensus-Based Sediment Quality Guidelines for Freshwater Ecosystems. Archives of Environmental Contamination and Toxicology, 39(1), 20–31. https://doi.org/10.1007/s002440010075
+  
+  Mercury contamination in and along the Penobscot River, Bureau of Remediation and Waste Management, Maine Department of Environmental Protection. (n.d.). Retrieved December 10, 2025, from https://www.maine.gov/dep/spills/holtrachem/
+  
+  Penobscot River Restoration Project. (2013, September 25). Natural Resources Council of Maine. https://www.nrcm.org/programs/waters/penobscot-river-restoration-project/
+  
+  Restoring the Penobscot River. (n.d.). The Nature Conservancy. Retrieved December 10, 2025, from https://www.nature.org/en-us/about-us/where-we-work/united-states/maine/stories-in-maine/restoring-the-penobscot-river/
+  
+  Settlement Details | Penobscot River Remediation. (n.d.). Penobscot RR. Retrieved December 10, 2025, from https://www.penobscotriverremediation.com/settlementdetails
 
