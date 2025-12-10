@@ -335,7 +335,7 @@ Site_Map
 ```
 
 
-#Data Analysis
+# Data Analysis
 
 ## Multiple Linear Regression
 
@@ -555,12 +555,7 @@ confidently determine whether our hypothesis is true or false.
 
 
 # Conclusion
-```{r conclusion}
 
-#Spearman Rho because there is no seasonality, it is non-parametric and missing
-#data is allowed.?
-
-```
 In conclusion, after conducting our temporal analysis, we found that we 
 had to reject our first hypothesis that, post-closure of the site, mercury 
 levels in surface sediment would decrease over time and with increasing 
