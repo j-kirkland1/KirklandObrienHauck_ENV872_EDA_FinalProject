@@ -3,11 +3,14 @@ title: Spatial, Temporal, and Depth Distributions of Mercury Contamination in th
   Penobscot River, Maine
 author: "Sloane Hauck, Julia Kirkland, Meg O'Brien, and Cira Ortiz"
 output:
+  html_document:
+    toc: true
+    df_print: paged
+  pdf_document: default
   bookdown::html_document2:
     toc: true
     number_sections: true
     df_print: paged
-  pdf_document: default
 geometry: margin=2.54cm
 editor_options:
   chunk_output_type: console
@@ -61,7 +64,7 @@ theme_set(Mytheme)
 The Penobscot River in Maine has been the object of environmental concern
 and focus for years. It is the largest watershed in New England and hosts 
 the largest run of Atlantic salmon on the East Coast (Natural Resources 
-Council of Maine, 2013; The Nature Conservancy, n.d.).. Despite its ecological 
+Council of Maine, 2013; The Nature Conservancy, n.d.). Despite its ecological 
 importance, the watershed has experienced significant degradation due to high 
 levels of mercury contamination by a chemical plant. In 1967, a pharmaceutical 
 company, Mallinckrodt began discharging mercury into the river as part of its
@@ -89,7 +92,7 @@ Because this watershed has been the subject of extensive study to document
 the need for remediation, there is considerable data about its sediment history.
 NOAA has compiled datasets on sediment, soil, and tissue chemistry from various 
 studies of the Penobscot watershed (Island Institute, n.d.). Using this data, 
-we will examine mercurylevels in the sediment.
+we will examine mercury levels in the sediment.
 
 
 ## Research Questions and Hypotheses
@@ -200,7 +203,8 @@ unique(data_wrangle_2$Sample_Depth_Unit)
 After cleaning the dataset, we plotted sample depths against mercury 
 concentrations, mapped the sampling locations onto the Penobscot River, 
 and examined concentration trends over time. We plotted a reference line 
-representing the mercury PEC (MacDonald et al., 2000), above which harmful effects to sediment-dwelling 
+representing the mercury probable effect concentration (PEC) 
+(MacDonald et al., 2000), above which harmful effects to sediment-dwelling 
 biota are likely to occur.
 
 
@@ -246,7 +250,6 @@ analysis or evaluate the direct effects of the 1967 contamination event.
 This gap reflects broader historical issues in environmental monitoring and 
 regulatory oversight during that period. To ensure analytical consistency, 
 we restricted our final dataset to samples collected from 2000–2021.
-
 
 # Data Wrangling 
 
@@ -294,8 +297,11 @@ dataset subset during the original data wrangling. In the figures you can see
 that the highest concentrations are centered around the historical site itself.
 
 This first map shows mercury concentration, in part per million (PPM) 
-as a color gradient in the spatially situated river. As seen the highest
-values are around 108.63 PPM, which is 100 times that of the PEC.
+as a color gradient in the spatially situated river. The highest measured 
+concentrations reach 108.63 PPM, about 100 times the PEC of mercury in sediment, 
+1.06 PPM. Because the PEC represents the threshold at which benthic 
+macroinvertebrates are likely to experience toxic effects from mercury, these 
+results emphasize how severely toxic the Penobscot River sediments are.
 
 
 ```{r map.1, warning=FALSE, message=FALSE, echo=FALSE}
@@ -468,7 +474,7 @@ How do Mercury levels change, based on depth?
 The following graph reflects the mercury concentrations from 1970 - 2021 by 
 depth type (surface sediment or subsurface sediment). As seen in the graph, 
 the 1970 has more surface sediment mercury concentrations which reflects 
-the proximity to the initial pollution. Whereas later decades have more 
+the proximity to the initial pollution, whereas later decades have more 
 subsurface sediment mercury concentrations. 
 
 ```{r Figure4, echo=FALSE, fig.cap='Plot of concentrations over time and their depth category. Surface depth refers to data in the top four inches, while subsurface data is any depth below that.'}
@@ -551,7 +557,8 @@ refinement, no significant temporal trend was detected.
 To further assess the potential relationship between mercury concentration 
 and depth, we conducted a linear regression analysis. Although the data did 
 not visually suggest a trend, the regression results indicated evidence of a
-linear relationship, as the p-value of 0.0001124 was statistically significant being that it was < 0.05. 
+linear relationship, as the p-value of 0.0001124 was statistically significant 
+being that it was < 0.05. 
 However, the adjusted R-squared value of 0.001936 showed that the relationship 
 is extremely weak.
 
