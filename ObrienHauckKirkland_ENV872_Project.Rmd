@@ -3,10 +3,6 @@ title: Spatial, Temporal, and Depth Distributions of Mercury Contamination in th
   Penobscot River, Maine
 author: "Sloane Hauck, Julia Kirkland, Meg O'Brien, and Cira Ortiz"
 output:
-  html_document:
-    toc: true
-    df_print: paged
-  pdf_document: default
   bookdown::html_document2:
     toc: true
     number_sections: true
@@ -422,7 +418,7 @@ The resulting p-value is 0.2237, which is greater than 0.05. Therefore, we concl
 
 Because no linear trend was detected, we ran the seasonal Mann Kendall test to determine whether there is a monotonic trend exists that fluctuates with seasonal patterns. 
 
-```{r temporal.timeseries, echo=FALSE}
+```{r Figure4, echo=FALSE, fig.cap='Time-series of mercurcy concentration trends between 2000 and 2021.'}
 
 #Time Series Object
 
@@ -477,7 +473,7 @@ the 1970 has more surface sediment mercury concentrations which reflects
 the proximity to the initial pollution, whereas later decades have more 
 subsurface sediment mercury concentrations. 
 
-```{r Figure4, echo=FALSE, fig.cap='Plot of concentrations over time and their depth category. Surface depth refers to data in the top four inches, while subsurface data is any depth below that.'}
+```{r Figure5, echo=FALSE, fig.cap='Plot of concentrations over time and their depth category. Surface depth refers to data in the top four inches, while subsurface data is any depth below that.'}
 
 DepthPlot.data <- data_clean %>%
   na.omit() %>%
@@ -503,7 +499,7 @@ figure4
 
 ```
 
-```{r Figure5, echo=FALSE, fig.cap='Mercury concentrations by depth.'}
+```{r Figure6, echo=FALSE, fig.cap='Mercury concentrations by depth.'}
 #simple plot
 figure5 <- ggplot(DepthPlot.data,
        aes(x = Avg_Depth_ft, y = Max_Result_.Raw.)) +
@@ -519,7 +515,7 @@ figure5
 
 ```
 
-```{r Figure6, echo=FALSE, fig.cap='Mercury concentrations by depth in the top two feet of benthic sediment.'}
+```{r Figure7, echo=FALSE, fig.cap='Mercury concentrations by depth in the top two feet of benthic sediment.'}
 
 #top two feet because that is the most biologically active zone 
 DepthPlot.data_bioactive <- DepthPlot.data %>% 
@@ -616,3 +612,6 @@ List of R squared values and p-values from linear regression.
   
   Settlement Details | Penobscot River Remediation. (n.d.). Penobscot RR. Retrieved December 10, 2025, from https://www.penobscotriverremediation.com/settlementdetails
 
+# GitHub Link
+
+https://github.com/j-kirkland1/KirklandObrienHauckOrtiz_ENV872_EDA_FinalProject
